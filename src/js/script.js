@@ -1,3 +1,6 @@
+// Импорт необходимих модулей
+// Код импортирует модули Notiflix и SimpleLightbox вместе со связанными с ними файлами CSS.
+//  Функция fetchImagesтакже импортируется из другого модуля с именем fetchImages.js.
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
@@ -10,15 +13,22 @@ let query = '';
 let page = 1;
 let simpleLightBox;
 const perPage = 40;
-
+// Код ниже добавляет прослушиватели событий к элементам searchFormи window. 
+// Событие submiton searchFormобрабатывается функцией onSearchForm,
+//  а scrollсобытие on windowобрабатывается функцией showLoadMorePage.
 searchForm.addEventListener('submit', onSearchForm);
 
+
+
+// Функция renderGallery принимает массив изображений в качестве параметра и генерирует
+//  HTML-разметку для 
+// каждого изображения.
+//  Затем он вставляет разметку в galleryэлемент.
 function renderGallery(images) {
   // Перевірка чи існує галерея перед вставкою даних
   if (!gallery) {
     return;
   }
-
   const markup = images
     .map(image => {
       const {
@@ -46,9 +56,18 @@ function renderGallery(images) {
       `;
     })
     .join('');
-
+// вставляємо на екран
   gallery.insertAdjacentHTML('beforeend', markup);
   // Цей код дозволяє автоматично прокручувати сторінку на висоту 2 карток галереї, коли вона завантажується
+  // Спочатку код отримує висоту першого дочірнього елемента з класом "gallery" за допомогою 
+  // методу getBoundingClientRect(), який повертає об'єкт з координатами верхньої, нижньої, лівої та правої межі 
+  // елемента, а також його висоту та ширину.
+  // За допомогою деструктуризації об'єкта та перейменування властивості height на cardHeight,
+  //  отримуємо висоту першої картки галереї.
+  // Після цього викликається метод window.scrollBy(), який прокручує вікно 
+  // браузера на вказану висоту. У даному випадку, висота вікна прокручується на висоту двох карток галереї,
+  //  помножену на їх висоту.
+  //  Також вказується параметр behavior, який встановлює стиль прокрутки - "smooth" - зі згладжуванням.
   const { height: cardHeight } = document
     .querySelector('.gallery')
     .firstElementChild.getBoundingClientRect();
@@ -59,6 +78,12 @@ function renderGallery(images) {
   });
 }
 
+
+
+// Функция onSearchFormо брабатывает событие отправки формы. 
+// Сначала он предотвращает отправку формы по умолчанию, затем получает поисковый запрос, 
+// введенный пользователем, и очищает элемент gallery. Если запрос пуст, он отображает сообщение об ошибке с помощью Notiflix. В противном случае она вызывает fetchImagesфункцию для получения первой страницы результатов поиска. Если результатов поиска нет, отображается сообщение об ошибке. В противном случае он вызывает renderGalleryфункцию для отображения изображений и создает экземпляр SimpleLightbox,
+//  чтобы включить модальное средство просмотра изображений.
 function onSearchForm(e) {
   e.preventDefault();
   page = 1;
@@ -90,6 +115,12 @@ function onSearchForm(e) {
     });
 }
 
+// Функция onloadMore вызывается, когда пользователь достигает нижней части страницы и 
+// загружает больше изображений. Он увеличивает page переменную и вызывает fetchImages получение следующей 
+// страницы результатов поиска.
+//  Если результатов поиска больше нет, отображается сообщение об ошибке.
+
+
 function onloadMore() {
   page += 1;
   simpleLightBox.destroy();
@@ -110,7 +141,8 @@ function onloadMore() {
     })
     .catch(error => console.log(error));
 }
-
+// Функция checkIfEndOfPage проверяет, достиг ли пользователь нижней части страницы,
+//  и возвращает логическое значение.
 function checkIfEndOfPage() {
   return (
     window.innerHeight + window.pageYOffset >=
